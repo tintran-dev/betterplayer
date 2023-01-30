@@ -23,7 +23,7 @@ AVPictureInPictureController *_pipController;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super init];
   NSAssert(self, @"super init cannot be nil");
-  NSLog(@"initWithFrame =======>");
+  // NSLog(@"initWithFrame =======>");
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
@@ -38,7 +38,7 @@ AVPictureInPictureController *_pipController;
 }
 
 - (nonnull UIView *)view {
-  NSLog(@"UIView view =======>");
+  // NSLog(@"UIView view =======>");
   BetterPlayerView *playerView =
       [[BetterPlayerView alloc] initWithFrame:CGRectZero];
   playerView.player = _player;
@@ -83,7 +83,7 @@ AVPictureInPictureController *_pipController;
 }
 
 - (void)clear {
-  NSLog(@"clear =======>");
+  // NSLog(@"clear =======>");
   _isInitialized = false;
   _isPlaying = false;
   _disposed = false;
@@ -99,7 +99,7 @@ AVPictureInPictureController *_pipController;
 }
 
 - (void)removeObservers {
-  NSLog(@"removeObservers =======>");
+  // NSLog(@"removeObservers =======>");
   if (self._observersAdded) {
     [_player removeObserver:self forKeyPath:@"rate" context:nil];
     [[_player currentItem] removeObserver:self
@@ -126,7 +126,7 @@ AVPictureInPictureController *_pipController;
 }
 
 - (void)itemDidPlayToEndTime:(NSNotification *)notification {
-  NSLog(@"removeObservers =======>");
+  NSLog(@"itemDidPlayToEndTime =======>");
   if (_isLooping) {
     AVPlayerItem *p = [notification object];
     [p seekToTime:kCMTimeZero completionHandler:nil];
@@ -189,7 +189,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (CGAffineTransform)fixTransform:(AVAssetTrack *)videoTrack {
-  NSLog(@"fixTransform =======>");
+  // NSLog(@"fixTransform =======>");
   CGAffineTransform transform = videoTrack.preferredTransform;
   // TODO(@recastrodiaz): why do we need to do this? Why is the
   // preferredTransform incorrect? At least 2 user videos show a black screen
@@ -294,7 +294,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _isStalledCheckStarted = false;
   _playerRate = 1;
   [_player replaceCurrentItemWithPlayerItem:item];
-
+  _player.currentItem.preferredForwardBufferDuration = 1;
   AVAsset *asset = [item asset];
   void (^assetCompletionHandler)(void) = ^{
     if ([asset statusOfValueForKey:@"tracks"
@@ -334,7 +334,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)handleStalled {
-  NSLog(@"handleStalled =======>");
+  // NSLog(@"handleStalled =======>");
   if (_isStalledCheckStarted) {
     return;
   }
@@ -343,7 +343,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)startStalledCheck {
-  NSLog(@"startStalledCheck =======>");
+  // NSLog(@"startStalledCheck =======>");
   if (_player.currentItem.playbackLikelyToKeepUp ||
       [self availableDuration] -
               CMTimeGetSeconds(_player.currentItem.currentTime) >
@@ -382,14 +382,20 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
+// waitingToPlayAtSpecifiedRate time cotrol status= 1
+// pause time cotrol status = 0
+// pause time cotrol status = 2
+
 - (void)observeValueForKeyPath:(NSString *)path
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
   NSLog(@"observeValueForKeyPath =======>");
+  NSLog(@"change Dictionary =======> %@", change);
+  // NSLog(@"context  =======> %@", context);
   if ([path isEqualToString:@"rate"]) {
-    NSLog(@"path isEqualToString =======> %@", path);
     if (@available(iOS 10.0, *)) {
+      NSLog(@"@available(iOS 10.0, *) =======>%ld", @available(iOS 10.0, *));
       if (_pipController.pictureInPictureActive == true) {
         if (_lastAvPlayerTimeControlStatus != [NSNull null] &&
             _lastAvPlayerTimeControlStatus == _player.timeControlStatus) {
@@ -425,7 +431,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 
   if (context == timeRangeContext) {
-    NSLog(@"context =======> %@", context);
+    NSLog(@"timeRangeContext observer called =======>");
+    // NSLog(@"context =======> %@", context);
     if (_eventSink != nil) {
       NSMutableArray<NSArray<NSNumber *> *> *values =
           [[NSMutableArray alloc] init];
@@ -434,6 +441,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         int64_t start = [BetterPlayerTimeUtils FLTCMTimeToMillis:(range.start)];
         int64_t end =
             start + [BetterPlayerTimeUtils FLTCMTimeToMillis:(range.duration)];
+        NSLog(@"start =======> %lld", start);
+        NSLog(@"end =======> %lld", end);
         if (!CMTIME_IS_INVALID(_player.currentItem.forwardPlaybackEndTime)) {
           int64_t endTime = [BetterPlayerTimeUtils
               FLTCMTimeToMillis:(_player.currentItem.forwardPlaybackEndTime)];
@@ -448,10 +457,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
           @{@"event" : @"bufferingUpdate", @"values" : values, @"key" : _key});
     }
   } else if (context == presentationSizeContext) {
+    NSLog(@"presentationSizeContext observer called =======>");
     [self onReadyToPlay];
   }
 
   else if (context == statusContext) {
+    NSLog(@"statusContext observer called =======>");
     AVPlayerItem *item = (AVPlayerItem *)object;
     switch (item.status) {
     case AVPlayerItemStatusFailed:
@@ -475,16 +486,19 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
+      NSLog(@"isPlaybackLikelyToKeepUp called =======>");
       [self updatePlayingState];
       if (_eventSink != nil) {
         _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
       }
     }
   } else if (context == playbackBufferEmptyContext) {
+    NSLog(@"playbackBufferEmptyContext observer called =======>");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingStart", @"key" : _key});
     }
   } else if (context == playbackBufferFullContext) {
+    NSLog(@"playbackBufferFullContext observer called =======>");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
     }
@@ -493,6 +507,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)updatePlayingState {
   NSLog(@"updatePlayingState =======>");
+  NSLog(@"_player.rate ::: %f", _player.rate);
   if (!_isInitialized || !_key) {
     return;
   }

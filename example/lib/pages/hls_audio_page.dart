@@ -12,10 +12,12 @@ class _HlsAudioPageState extends State<HlsAudioPage> {
 
   @override
   void initState() {
+    print("_HlsAudioPageState");
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
       aspectRatio: 16 / 9,
       fit: BoxFit.contain,
+      autoPlay: true,
     );
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
@@ -44,10 +46,12 @@ class _HlsAudioPageState extends State<HlsAudioPage> {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: BetterPlayer(controller: _betterPlayerController),
-          ),
+          _betterPlayerController.isVideoInitialized() ?? false
+              ? AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: BetterPlayer(controller: _betterPlayerController),
+                )
+              : Container(),
         ],
       ),
     );

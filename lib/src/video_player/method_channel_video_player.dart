@@ -361,7 +361,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           );
         case 'bufferingUpdate':
           final List<dynamic> values = map['values'] as List;
-
           return VideoEvent(
             eventType: VideoEventType.bufferingUpdate,
             key: key,

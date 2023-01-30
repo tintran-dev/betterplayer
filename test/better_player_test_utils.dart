@@ -10,7 +10,7 @@ class BetterPlayerTestUtils {
   static const String forBiggerBlazesUrl =
       "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
   static const String elephantDreamStreamUrl =
-      "http://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8";
+      "https://storage.googleapis.com/ps_videos/videos/05zrn7pv/05zrn7pv.m3u8";
 
   static BetterPlayerMockController setupBetterPlayerMockController(
       {VideoPlayerController? controller}) {
