@@ -331,7 +331,8 @@ bool _remoteCommandsInitialized = false;
       NSString *cacheKey = dataSource[@"cacheKey"];
       NSNumber *maxCacheSize = dataSource[@"maxCacheSize"];
       NSString *videoExtension = dataSource[@"videoExtension"];
-      NSInteger *downloadFullVideoOnIos = dataSource[@"downloadFullVideoOnIos"];
+      NSNumber *downloadFullVideoOnIos =
+          [NSNumber numberWithInteger:dataSource[@"downloadFullVideoOnIos"]];
 
       int overriddenDuration = 0;
       if ([dataSource objectForKey:@"overriddenDuration"] != [NSNull null]) {
