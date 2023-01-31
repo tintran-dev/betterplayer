@@ -222,8 +222,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                        cacheKey:cacheKey
                    cacheManager:cacheManager
              overriddenDuration:overriddenDuration
-         downloadFullVideoOnIos:downloadFullVideoOnIos
-                 videoExtension:nil];
+                 videoExtension:nil
+         downloadFullVideoOnIos:downloadFullVideoOnIos];
 }
 
 - (void)setDataSourceURL:(NSURL *)url
