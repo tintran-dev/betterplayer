@@ -365,7 +365,7 @@ bool _remoteCommandsInitialized = false;
                           cacheKey:cacheKey
                       cacheManager:_cacheManager
                 overriddenDuration:overriddenDuration
-            downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos];
+            downloadFullVideoOnIos:downloadFullVideoOnIos];
       } else if (uriArg) {
         [player setDataSourceURL:[NSURL URLWithString:uriArg]
                            withKey:key
@@ -377,7 +377,7 @@ bool _remoteCommandsInitialized = false;
                       cacheManager:_cacheManager
                 overriddenDuration:overriddenDuration
                     videoExtension:videoExtension
-            downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos];
+            downloadFullVideoOnIos:downloadFullVideoOnIos];
       } else {
         result(FlutterMethodNotImplemented);
       }
