@@ -20,7 +20,6 @@ bool _remoteCommandsInitialized = false;
 
 #pragma mark - FlutterPlugin protocol
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  NSLog(@"registerWithRegistrar =======>");
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"better_player_channel"
                                   binaryMessenger:[registrar messenger]];
@@ -34,7 +33,6 @@ bool _remoteCommandsInitialized = false;
 - (instancetype)initWithRegistrar:
     (NSObject<FlutterPluginRegistrar> *)registrar {
   self = [super init];
-  NSLog(@"initWithRegistrar =======>");
   NSAssert(self, @"super init cannot be nil");
   _messenger = [registrar messenger];
   _registrar = registrar;
@@ -44,15 +42,11 @@ bool _remoteCommandsInitialized = false;
   _dataSourceDict = [NSMutableDictionary dictionary];
   _cacheManager = [[CacheManager alloc] init];
   [_cacheManager setup];
-  NSLog(@"_dataSourceDict =======> %@", _dataSourceDict);
-  NSLog(@"_players =======> %@", _players);
-  NSLog(@"_messenger =======> %@", _messenger);
   return self;
 }
 
 - (void)detachFromEngineForRegistrar:
     (NSObject<FlutterPluginRegistrar> *)registrar {
-  NSLog(@"detachFromEngineForRegistrar =======>");
   for (NSNumber *textureId in _players.allKeys) {
     BetterPlayer *player = _players[textureId];
     [player disposeSansEventChannel];
@@ -64,27 +58,22 @@ bool _remoteCommandsInitialized = false;
 - (NSObject<FlutterPlatformView> *)createWithFrame:(CGRect)frame
                                     viewIdentifier:(int64_t)viewId
                                          arguments:(id _Nullable)args {
-  NSLog(@"createWithFrame =======>");
   NSNumber *textureId = [args objectForKey:@"textureId"];
   BetterPlayerView *player = [_players objectForKey:@(textureId.intValue)];
   return player;
 }
 
 - (NSObject<FlutterMessageCodec> *)createArgsCodec {
-  NSLog(@"createArgsCodec =======>");
   return [FlutterStandardMessageCodec sharedInstance];
 }
 
 #pragma mark - BetterPlayerPlugin class
 - (int)newTextureId {
-  NSLog(@"newTextureId =======>");
   texturesCount += 1;
   return texturesCount;
 }
 - (void)onPlayerSetup:(BetterPlayer *)player result:(FlutterResult)result {
-  NSLog(@"onPlayerSetup =======>");
   int64_t textureId = [self newTextureId];
-  NSLog(@"better_player_channel/videoEvents%lld", textureId);
   FlutterEventChannel *eventChannel = [FlutterEventChannel
       eventChannelWithName:
           [NSString stringWithFormat:@"better_player_channel/videoEvents%lld",
@@ -98,7 +87,6 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (void)setupRemoteNotification:(BetterPlayer *)player {
-  NSLog(@"setupRemoteNotification =======>");
   _notificationPlayer = player;
   [self stopOtherUpdateListener:player];
   NSDictionary *dataSource =
@@ -122,13 +110,11 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (void)setRemoteCommandsNotificationActive {
-  NSLog(@"setRemoteCommandsNotificationActive =======>");
   [[AVAudioSession sharedInstance] setActive:true error:nil];
   [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 }
 
 - (void)setRemoteCommandsNotificationNotActive {
-  NSLog(@"setRemoteCommandsNotificationNotActive =======>");
   if ([_players count] == 0) {
     [[AVAudioSession sharedInstance] setActive:false error:nil];
   }
@@ -137,7 +123,6 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (void)setupRemoteCommands:(BetterPlayer *)player {
-  NSLog(@"setupRemoteCommands =======>");
   if (_remoteCommandsInitialized) {
     return;
   }
@@ -204,7 +189,6 @@ bool _remoteCommandsInitialized = false;
 
 - (void)setupRemoteCommandNotification:(BetterPlayer *)player, NSString *title,
                                        NSString *author, NSString *imageUrl {
-  NSLog(@"setupRemoteCommandNotification =======>");
   float positionInSeconds = player.position / 1000;
   float durationInSeconds = player.duration / 1000;
 
@@ -262,7 +246,6 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (NSString *)getTextureId:(BetterPlayer *)player {
-  NSLog(@"getTextureId =======>");
   NSArray *temp = [_players allKeysForObject:player];
   NSString *key = [temp lastObject];
   return key;
@@ -270,7 +253,6 @@ bool _remoteCommandsInitialized = false;
 
 - (void)setupUpdateListener:(BetterPlayer *)player, NSString *title,
                             NSString *author, NSString *imageUrl {
-  NSLog(@"setupUpdateListener =======>");
   id _timeObserverId = [player.player
       addPeriodicTimeObserverForInterval:CMTimeMake(1, 1)
                                    queue:NULL
@@ -286,7 +268,6 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (void)disposeNotificationData:(BetterPlayer *)player {
-  NSLog(@"disposeNotificationData =======>");
   if (player == _notificationPlayer) {
     _notificationPlayer = NULL;
     _remoteCommandsInitialized = false;
@@ -303,7 +284,6 @@ bool _remoteCommandsInitialized = false;
 }
 
 - (void)stopOtherUpdateListener:(BetterPlayer *)player {
-  NSLog(@"stopOtherUpdateListener =======>");
   NSString *currentPlayerTextureId = [self getTextureId:player];
   for (NSString *textureId in _timeObserverIdDict.allKeys) {
     if (currentPlayerTextureId == textureId) {
@@ -319,19 +299,15 @@ bool _remoteCommandsInitialized = false;
 
 - (void)handleMethodCall:(FlutterMethodCall *)call
                   result:(FlutterResult)result {
-  NSLog(@"handleMethodCall objective C =======>");
   if ([@"init" isEqualToString:call.method]) {
-    NSLog(@"init method called =======>");
     // Allow audio playback when the Ring/Silent switch is set to silent
     for (NSNumber *textureId in _players) {
       [_players[textureId] dispose];
-      NSLog(@"player =======> %@", _players);
     }
 
     [_players removeAllObjects];
     result(nil);
   } else if ([@"create" isEqualToString:call.method]) {
-    NSLog(@"create method called =======>");
     BetterPlayer *player = [[BetterPlayer alloc] initWithFrame:CGRectZero];
     [self onPlayerSetup:player result:result];
   } else {
@@ -340,13 +316,11 @@ bool _remoteCommandsInitialized = false;
         ((NSNumber *)argsMap[@"textureId"]).unsignedIntegerValue;
     BetterPlayer *player = _players[@(textureId)];
     if ([@"setDataSource" isEqualToString:call.method]) {
-      NSLog(@"setDataSource method called =======>");
       [player clear];
       // This call will clear cached frame because we will return transparent
       // frame
 
       NSDictionary *dataSource = argsMap[@"dataSource"];
-      NSLog(@"dataSource ========> %@", dataSource);
       [_dataSourceDict setObject:dataSource forKey:[self getTextureId:player]];
       NSString *assetArg = dataSource[@"asset"];
       NSString *uriArg = dataSource[@"uri"];
@@ -357,14 +331,14 @@ bool _remoteCommandsInitialized = false;
       NSString *cacheKey = dataSource[@"cacheKey"];
       NSNumber *maxCacheSize = dataSource[@"maxCacheSize"];
       NSString *videoExtension = dataSource[@"videoExtension"];
+      NSInteger *downloadFullVideoOnIos = dataSource[@"downloadFullVideoOnIos"];
+
       int overriddenDuration = 0;
       if ([dataSource objectForKey:@"overriddenDuration"] != [NSNull null]) {
         overriddenDuration = [dataSource[@"overriddenDuration"] intValue];
       }
-      NSLog(@"overriddenDuration ========> %@", overriddenDuration);
       BOOL useCache = false;
       id useCacheObject = [dataSource objectForKey:@"useCache"];
-      NSLog(@"useCacheObject ========> %@", useCacheObject);
       if (useCacheObject != [NSNull null]) {
         useCache = [[dataSource objectForKey:@"useCache"] boolValue];
         if (useCache) {
@@ -375,7 +349,6 @@ bool _remoteCommandsInitialized = false;
       if (headers == [NSNull null] || headers == NULL) {
         headers = @{};
       }
-      NSLog(@"assetArg ========> %@", assetArg);
       if (assetArg) {
         NSString *assetPath;
         NSString *package = dataSource[@"package"];
@@ -391,24 +364,25 @@ bool _remoteCommandsInitialized = false;
                     withLicenseUrl:licenseUrl
                           cacheKey:cacheKey
                       cacheManager:_cacheManager
-                overriddenDuration:overriddenDuration];
+                overriddenDuration:overriddenDuration
+            downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos];
       } else if (uriArg) {
         [player setDataSourceURL:[NSURL URLWithString:uriArg]
-                         withKey:key
-              withCertificateUrl:certificateUrl
-                  withLicenseUrl:licenseUrl
-                     withHeaders:headers
-                       withCache:useCache
-                        cacheKey:cacheKey
-                    cacheManager:_cacheManager
-              overriddenDuration:overriddenDuration
-                  videoExtension:videoExtension];
+                           withKey:key
+                withCertificateUrl:certificateUrl
+                    withLicenseUrl:licenseUrl
+                       withHeaders:headers
+                         withCache:useCache
+                          cacheKey:cacheKey
+                      cacheManager:_cacheManager
+                overriddenDuration:overriddenDuration
+                    videoExtension:videoExtension
+            downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos];
       } else {
         result(FlutterMethodNotImplemented);
       }
       result(nil);
     } else if ([@"dispose" isEqualToString:call.method]) {
-      NSLog(@"dispose method called =======>");
       [player clear];
       [self disposeNotificationData:player];
       [self setRemoteCommandsNotificationNotActive];
@@ -440,30 +414,23 @@ bool _remoteCommandsInitialized = false;
       }
       result(nil);
     } else if ([@"setLooping" isEqualToString:call.method]) {
-      NSLog(@"setLooping method called =======>");
       [player setIsLooping:[argsMap[@"looping"] boolValue]];
       result(nil);
     } else if ([@"setVolume" isEqualToString:call.method]) {
-      NSLog(@"setVolume method called =======>");
       [player setVolume:[argsMap[@"volume"] doubleValue]];
       result(nil);
     } else if ([@"play" isEqualToString:call.method]) {
-      NSLog(@"play method called =======>");
       [self setupRemoteNotification:player];
       [player play];
       result(nil);
     } else if ([@"position" isEqualToString:call.method]) {
-      NSLog(@"position method called =======>");
       result(@([player position]));
     } else if ([@"absolutePosition" isEqualToString:call.method]) {
-      NSLog(@"absolutePosition method called =======>");
       result(@([player absolutePosition]));
     } else if ([@"seekTo" isEqualToString:call.method]) {
-      NSLog(@"seekTo method called =======>");
       [player seekTo:[argsMap[@"location"] intValue]];
       result(nil);
     } else if ([@"pause" isEqualToString:call.method]) {
-      NSLog(@"pause method called =======>");
       [player pause];
       result(nil);
     } else if ([@"setSpeed" isEqualToString:call.method]) {
@@ -477,14 +444,12 @@ bool _remoteCommandsInitialized = false;
       [player setTrackParameters:width:height:bitrate];
       result(nil);
     } else if ([@"enablePictureInPicture" isEqualToString:call.method]) {
-      NSLog(@"enablePictureInPicture method called =======>");
       double left = [argsMap[@"left"] doubleValue];
       double top = [argsMap[@"top"] doubleValue];
       double width = [argsMap[@"width"] doubleValue];
       double height = [argsMap[@"height"] doubleValue];
       [player enablePictureInPicture:CGRectMake(left, top, width, height)];
     } else if ([@"isPictureInPictureSupported" isEqualToString:call.method]) {
-      NSLog(@"isPictureInPictureSupported method called =======>");
       if (@available(iOS 9.0, *)) {
         if ([AVPictureInPictureController isPictureInPictureSupported]) {
           result([NSNumber numberWithBool:true]);
@@ -494,19 +459,15 @@ bool _remoteCommandsInitialized = false;
 
       result([NSNumber numberWithBool:false]);
     } else if ([@"disablePictureInPicture" isEqualToString:call.method]) {
-      NSLog(@"disablePictureInPicture method called =======>");
       [player disablePictureInPicture];
       [player setPictureInPicture:false];
     } else if ([@"setAudioTrack" isEqualToString:call.method]) {
-      NSLog(@"setAudioTrack method called =======>");
       NSString *name = argsMap[@"name"];
       int index = [argsMap[@"index"] intValue];
       [player setAudioTrack:name index:index];
     } else if ([@"setMixWithOthers" isEqualToString:call.method]) {
-      NSLog(@"setMixWithOthers method called =======>");
       [player setMixWithOthers:[argsMap[@"mixWithOthers"] boolValue]];
     } else if ([@"preCache" isEqualToString:call.method]) {
-      NSLog(@"preCache method called =======>");
       NSDictionary *dataSource = argsMap[@"dataSource"];
       NSString *urlArg = dataSource[@"uri"];
       NSString *cacheKey = dataSource[@"cacheKey"];
@@ -538,11 +499,9 @@ bool _remoteCommandsInitialized = false;
       }
       result(nil);
     } else if ([@"clearCache" isEqualToString:call.method]) {
-      NSLog(@"clearCache method called =======>");
       [_cacheManager clearCache];
       result(nil);
     } else if ([@"stopPreCache" isEqualToString:call.method]) {
-      NSLog(@"stopPreCache method called =======>");
       NSString *urlArg = argsMap[@"url"];
       NSString *cacheKey = argsMap[@"cacheKey"];
       NSString *videoExtension = argsMap[@"videoExtension"];

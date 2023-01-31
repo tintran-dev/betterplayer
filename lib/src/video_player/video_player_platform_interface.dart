@@ -227,6 +227,7 @@ class DataSource {
     this.activityName,
     this.clearKey,
     this.videoExtension,
+    this.useBufferForIos = 0,
   }) : assert(uri == null || asset == null);
 
   /// Describes the type of data source this [VideoPlayerController]
@@ -237,6 +238,11 @@ class DataSource {
   /// This has nothing to do with the video's file type. It's just the place
   /// from which the video is fetched from.
   final DataSourceType sourceType;
+
+  /// the download of video IOS is dependednt on this value ,
+  /// if set to 0 IOS will device itself how much to buffer
+  /// if set to 1 will take the buffering configurations well
+  int? useBufferForIos;
 
   /// The URI to the video file.
   ///

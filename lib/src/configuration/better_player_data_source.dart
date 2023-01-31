@@ -39,6 +39,11 @@ class BetterPlayerDataSource {
   ///If empty, then better player will choose name based on track parameters
   final List<String>? asmsTrackNames;
 
+  /// the download of video IOS is dependednt on this value ,
+  /// if set to 0 IOS will device itself how much to buffer
+  /// if set to 1 will take the buffering configurations well
+  int? useBufferForIos = 0;
+
   ///Optional, alternative resolutions for non-hls/dash video. Used to setup
   ///different qualities for video.
   ///Data should be in given format:
@@ -99,6 +104,7 @@ class BetterPlayerDataSource {
     this.drmConfiguration,
     this.placeholder,
     this.bufferingConfiguration = const BetterPlayerBufferingConfiguration(),
+    this.useBufferForIos,
   }) : assert(
             (type == BetterPlayerDataSourceType.network ||
                     type == BetterPlayerDataSourceType.file) ||
@@ -126,25 +132,24 @@ class BetterPlayerDataSource {
     Widget? placeholder,
     BetterPlayerBufferingConfiguration bufferingConfiguration =
         const BetterPlayerBufferingConfiguration(),
+    int? useBufferForIos,
   }) {
-    return BetterPlayerDataSource(
-      BetterPlayerDataSourceType.network,
-      url,
-      subtitles: subtitles,
-      liveStream: liveStream,
-      headers: headers,
-      useAsmsSubtitles: useAsmsSubtitles,
-      useAsmsTracks: useAsmsTracks,
-      useAsmsAudioTracks: useAsmsAudioTracks,
-      resolutions: qualities,
-      cacheConfiguration: cacheConfiguration,
-      notificationConfiguration: notificationConfiguration,
-      overriddenDuration: overriddenDuration,
-      videoFormat: videoFormat,
-      drmConfiguration: drmConfiguration,
-      placeholder: placeholder,
-      bufferingConfiguration: bufferingConfiguration,
-    );
+    return BetterPlayerDataSource(BetterPlayerDataSourceType.network, url,
+        subtitles: subtitles,
+        liveStream: liveStream,
+        headers: headers,
+        useAsmsSubtitles: useAsmsSubtitles,
+        useAsmsTracks: useAsmsTracks,
+        useAsmsAudioTracks: useAsmsAudioTracks,
+        resolutions: qualities,
+        cacheConfiguration: cacheConfiguration,
+        notificationConfiguration: notificationConfiguration,
+        overriddenDuration: overriddenDuration,
+        videoFormat: videoFormat,
+        drmConfiguration: drmConfiguration,
+        placeholder: placeholder,
+        bufferingConfiguration: bufferingConfiguration,
+        useBufferForIos: useBufferForIos);
   }
 
   ///Factory method to build file data source which uses url as data source.
@@ -227,28 +232,27 @@ class BetterPlayerDataSource {
     Widget? placeholder,
     BetterPlayerBufferingConfiguration? bufferingConfiguration =
         const BetterPlayerBufferingConfiguration(),
+    int? useBufferForIos,
   }) {
-    return BetterPlayerDataSource(
-      type ?? this.type,
-      url ?? this.url,
-      bytes: bytes ?? this.bytes,
-      subtitles: subtitles ?? this.subtitles,
-      liveStream: liveStream ?? this.liveStream,
-      headers: headers ?? this.headers,
-      useAsmsSubtitles: useAsmsSubtitles ?? this.useAsmsSubtitles,
-      useAsmsTracks: useAsmsTracks ?? this.useAsmsTracks,
-      useAsmsAudioTracks: useAsmsAudioTracks ?? this.useAsmsAudioTracks,
-      resolutions: resolutions ?? this.resolutions,
-      cacheConfiguration: cacheConfiguration ?? this.cacheConfiguration,
-      notificationConfiguration:
-          notificationConfiguration ?? this.notificationConfiguration,
-      overriddenDuration: overriddenDuration ?? this.overriddenDuration,
-      videoFormat: videoFormat ?? this.videoFormat,
-      videoExtension: videoExtension ?? this.videoExtension,
-      drmConfiguration: drmConfiguration ?? this.drmConfiguration,
-      placeholder: placeholder ?? this.placeholder,
-      bufferingConfiguration:
-          bufferingConfiguration ?? this.bufferingConfiguration,
-    );
+    return BetterPlayerDataSource(type ?? this.type, url ?? this.url,
+        bytes: bytes ?? this.bytes,
+        subtitles: subtitles ?? this.subtitles,
+        liveStream: liveStream ?? this.liveStream,
+        headers: headers ?? this.headers,
+        useAsmsSubtitles: useAsmsSubtitles ?? this.useAsmsSubtitles,
+        useAsmsTracks: useAsmsTracks ?? this.useAsmsTracks,
+        useAsmsAudioTracks: useAsmsAudioTracks ?? this.useAsmsAudioTracks,
+        resolutions: resolutions ?? this.resolutions,
+        cacheConfiguration: cacheConfiguration ?? this.cacheConfiguration,
+        notificationConfiguration:
+            notificationConfiguration ?? this.notificationConfiguration,
+        overriddenDuration: overriddenDuration ?? this.overriddenDuration,
+        videoFormat: videoFormat ?? this.videoFormat,
+        videoExtension: videoExtension ?? this.videoExtension,
+        drmConfiguration: drmConfiguration ?? this.drmConfiguration,
+        placeholder: placeholder ?? this.placeholder,
+        bufferingConfiguration:
+            bufferingConfiguration ?? this.bufferingConfiguration,
+        useBufferForIos: useBufferForIos ?? this.useBufferForIos);
   }
 }
