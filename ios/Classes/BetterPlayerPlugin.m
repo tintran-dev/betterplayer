@@ -331,9 +331,7 @@ bool _remoteCommandsInitialized = false;
       NSString *cacheKey = dataSource[@"cacheKey"];
       NSNumber *maxCacheSize = dataSource[@"maxCacheSize"];
       NSString *videoExtension = dataSource[@"videoExtension"];
-      NSNumber *downloadFullVideoOnIos =
-          [NSNumber numberWithInteger:dataSource[@"downloadFullVideoOnIos"]];
-
+      int useBufferIOS = [dataSource[@"downloadFullVideoOnIos"] intValue];
       int overriddenDuration = 0;
       if ([dataSource objectForKey:@"overriddenDuration"] != [NSNull null]) {
         overriddenDuration = [dataSource[@"overriddenDuration"] intValue];
@@ -366,7 +364,7 @@ bool _remoteCommandsInitialized = false;
                           cacheKey:cacheKey
                       cacheManager:_cacheManager
                 overriddenDuration:overriddenDuration
-            downloadFullVideoOnIos:downloadFullVideoOnIos];
+            downloadFullVideoOnIos:useBufferIOS];
       } else if (uriArg) {
         [player setDataSourceURL:[NSURL URLWithString:uriArg]
                            withKey:key
@@ -378,7 +376,7 @@ bool _remoteCommandsInitialized = false;
                       cacheManager:_cacheManager
                 overriddenDuration:overriddenDuration
                     videoExtension:videoExtension
-            downloadFullVideoOnIos:downloadFullVideoOnIos];
+            downloadFullVideoOnIos:useBufferIOS];
       } else {
         result(FlutterMethodNotImplemented);
       }

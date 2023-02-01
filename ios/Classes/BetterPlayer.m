@@ -211,7 +211,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                   cacheKey:(NSString *)cacheKey
               cacheManager:(CacheManager *)cacheManager
         overriddenDuration:(int)overriddenDuration
-    downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos {
+    downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self setDataSourceURL:[NSURL fileURLWithPath:path]
                         withKey:key
@@ -236,7 +236,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
               cacheManager:(CacheManager *)cacheManager
         overriddenDuration:(int)overriddenDuration
             videoExtension:(NSString *)videoExtension
-    downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos {
+    downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
   _overriddenDuration = 0;
   if (headers == [NSNull null] || headers == NULL) {
     headers = @{};
@@ -284,7 +284,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setDataSourcePlayerItem:(AVPlayerItem *)item
                         withKey:(NSString *)key
-         downloadFullVideoOnIos:(NSInteger *)downloadFullVideoOnIos {
+         downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
   _key = key;
   _stalledCount = 0;
   _isStalledCheckStarted = false;
