@@ -37,7 +37,6 @@ import PINCache
 
     ///Setups cache server for HLS streams
     @objc public func setup(){
-        print("Cache Setup Swift Ran ==========>");
         GCDWebServer.setLogLevel(4)
         let webServer = GCDWebServer()
         let cache = PINCache.shared
