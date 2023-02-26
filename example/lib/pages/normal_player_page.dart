@@ -29,6 +29,12 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
       BetterPlayerDataSourceType.network,
       Constants.forBiggerBlazesUrl,
       useBufferForIos: 1,
+      bufferingConfiguration: const BetterPlayerBufferingConfiguration(
+        minBufferMs: 5000,
+        bufferForPlaybackMs: 250,
+        bufferForPlaybackAfterRebufferMs: 500,
+        maxBufferMs: 5000,
+      ),
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
