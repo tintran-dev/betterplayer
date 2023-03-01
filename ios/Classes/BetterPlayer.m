@@ -295,7 +295,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   if (downloadFullVideoOnIos == 1) {
     item.preferredForwardBufferDuration = 1;
   }
-
   [_player replaceCurrentItemWithPlayerItem:item];
 
   AVAsset *asset = [item asset];
@@ -345,23 +344,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)startStalledCheck {
-  NSLog(@"Abhinav >>>>>>>> startStalledCheck");
   if (_player.currentItem.playbackLikelyToKeepUp ||
       [self availableDuration] -
               CMTimeGetSeconds(_player.currentItem.currentTime) >
           10.0) {
-    NSLog(@"==============>");
-    NSLog(@"Abhinav >>>>>>>> play video");
-    NSLog(@"Abhinav >>>>>>>> Available Duration %f", [self availableDuration]);
-    NSLog(@"Abhinav >>>>>>>> Current Time %f",
-          CMTimeGetSeconds(_player.currentItem.currentTime));
     [self play];
   } else {
-    NSLog(@"==============>");
-    NSLog(@"Abhinav >>>>>>>> Video available duration less than 10 secs");
-    NSLog(@"Abhinav >>>>>>>> Available Duration %f", [self availableDuration]);
-    NSLog(@"Abhinav >>>>>>>> Current Time %f",
-          CMTimeGetSeconds(_player.currentItem.currentTime));
 
     _stalledCount++;
     if (_stalledCount > 60) {
@@ -392,8 +380,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         [[loadedTimeRanges objectAtIndex:0] CMTimeRangeValue];
     Float64 startSeconds = CMTimeGetSeconds(timeRange.start);
     Float64 durationSeconds = CMTimeGetSeconds(timeRange.duration);
-    NSLog(@"Abhinav ::::: startSeconds :: %f", startSeconds);
-    NSLog(@"Abhinav ::::: durationSeconds :: %f", durationSeconds);
     NSTimeInterval result = startSeconds + durationSeconds;
     return result;
   } else {
@@ -410,7 +396,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                         change:(NSDictionary *)change
                        context:(void *)context {
   if ([path isEqualToString:@"rate"]) {
-    NSLog(@"Abhinav >>>>>>>>>>>>> rate ::::: %f", _player.rate);
     if (@available(iOS 10.0, *)) {
       if (_pipController.pictureInPictureActive == true) {
         if (_lastAvPlayerTimeControlStatus != [NSNull null] &&
@@ -419,7 +404,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
 
         if (_player.timeControlStatus == AVPlayerTimeControlStatusPaused) {
-          NSLog(@"Abhinav ::::: AVPlayerTimeControlStatus.  Paused");
           _lastAvPlayerTimeControlStatus = _player.timeControlStatus;
           if (_eventSink != nil) {
             _eventSink(@{@"event" : @"pause"});
@@ -427,7 +411,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
           return;
         }
         if (_player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
-          NSLog(@"Abhinav ::::: AVPlayerTimeControlStatus.  Playing");
           _lastAvPlayerTimeControlStatus = _player.timeControlStatus;
           if (_eventSink != nil) {
             _eventSink(@{@"event" : @"play"});
@@ -444,7 +427,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             _player.currentItem.duration) && // but not yet finished
         _isPlaying) { // instance variable to handle overall state (changed to
       // YES when user triggers playback)
-      NSLog(@"Abhinav ::::: ggggggggggggggggg");
       [self handleStalled];
     }
   }
