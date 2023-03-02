@@ -419,8 +419,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       }
     }
 
-    if (_player.rate == 0 && // if player rate dropped to 0
-        CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >,
+    if (CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >,
                               kCMTimeZero) && // if video was started
         CMTIME_COMPARE_INLINE(
             _player.currentItem.currentTime, <,
