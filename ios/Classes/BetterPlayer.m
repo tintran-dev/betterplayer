@@ -368,14 +368,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (NSTimeInterval)availableDuration {
-  //  NSValue *range = [[_player currentItem] loadedTimeRanges][0];
-  //  if (range != nil) {
-  //    return CMTimeRangeGetEnd(range.CMTimeRangeValue);
-  //  }
-  //  return kCMTimeZero;
-
   NSArray *loadedTimeRanges = [[_player currentItem] loadedTimeRanges];
-  if (loadedTimeRanges != nil) {
+  if (loadedTimeRanges.count > 0) {
     CMTimeRange timeRange =
         [[loadedTimeRanges objectAtIndex:0] CMTimeRangeValue];
     Float64 startSeconds = CMTimeGetSeconds(timeRange.start);
@@ -419,7 +413,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       }
     }
 
-    if (CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >,
+    if (_player.rate == 0.0 && // if player rate dropped to 0
+        CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >,
                               kCMTimeZero) && // if video was started
         CMTIME_COMPARE_INLINE(
             _player.currentItem.currentTime, <,
