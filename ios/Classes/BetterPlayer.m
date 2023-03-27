@@ -237,6 +237,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         overriddenDuration:(int)overriddenDuration
             videoExtension:(NSString *)videoExtension
     downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
+  // NSLog(@"setDataSourceURL");
   _overriddenDuration = 0;
   if (headers == [NSNull null] || headers == NULL) {
     headers = @{};
@@ -275,6 +276,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 
   if (@available(iOS 10.0, *) && overriddenDuration > 0) {
+    // NSLog(@"overriddenDuration BetterPlayer.m :::: %f", overriddenDuration);
     _overriddenDuration = overriddenDuration;
   }
   return [self setDataSourcePlayerItem:item
@@ -293,7 +295,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // for video
 
   if (downloadFullVideoOnIos == 1) {
-    item.preferredForwardBufferDuration = 1;
+    item.preferredForwardBufferDuration = 5;
   }
   [_player replaceCurrentItemWithPlayerItem:item];
 
@@ -336,6 +338,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)handleStalled {
+  // NSLog(@"handleStalled.  %d", _isStalledCheckStarted);
   if (_isStalledCheckStarted) {
     return;
   }
@@ -344,6 +347,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (void)startStalledCheck {
+  // NSLog(@"available - current =====> %f",
+  //       [self availableDuration] -
+  //           CMTimeGetSeconds(_player.currentItem.currentTime));
+  // NSLog(@"playbackLikelyToKeepUp ====> %d",
+  //       _player.currentItem.playbackLikelyToKeepUp);
   if (_player.currentItem.playbackLikelyToKeepUp ||
       [self availableDuration] -
               CMTimeGetSeconds(_player.currentItem.currentTime) >
@@ -369,11 +377,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (NSTimeInterval)availableDuration {
   NSArray *loadedTimeRanges = [[_player currentItem] loadedTimeRanges];
+
   if (loadedTimeRanges.count > 0) {
     CMTimeRange timeRange =
         [[loadedTimeRanges objectAtIndex:0] CMTimeRangeValue];
     Float64 startSeconds = CMTimeGetSeconds(timeRange.start);
     Float64 durationSeconds = CMTimeGetSeconds(timeRange.duration);
+    NSLog(@"startSeconds %f", startSeconds);
+    NSLog(@"durationSeconds %f", startSeconds);
     NSTimeInterval result = startSeconds + durationSeconds;
     return result;
   } else {
@@ -412,6 +423,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         }
       }
     }
+    // if (_player.rate != 0.0) {
+    //   NSLog(@"rate not 0 and availableDuration ===> %f",
+    //         [self availableDuration]);
+    //   NSLog(@"currentTime :::: %f",
+    //         CMTimeGetSeconds(_player.currentItem.currentTime));
+    // }
 
     if (_player.rate == 0.0 && // if player rate dropped to 0
         CMTIME_COMPARE_INLINE(_player.currentItem.currentTime, >,
@@ -421,11 +438,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             _player.currentItem.duration) && // but not yet finished
         _isPlaying) { // instance variable to handle overall state (changed to
       // YES when user triggers playback)
+      // NSLog(@"player rate dropped to 0");
       [self handleStalled];
     }
   }
 
   if (context == timeRangeContext) {
+    // NSLog(@"timeRangeContext :::: %@", [object loadedTimeRanges]);
+    // NSLog(@"currentTime :::: %f",
+    //       CMTimeGetSeconds(_player.currentItem.currentTime));
+    // NSLog(@"duration :::: %f",
+    // CMTimeGetSeconds(_player.currentItem.duration));
     if (_eventSink != nil) {
       NSMutableArray<NSArray<NSNumber *> *> *values =
           [[NSMutableArray alloc] init];
@@ -444,6 +467,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
         [values addObject:@[ @(start), @(end) ]];
       }
+      // NSLog(@"bufferingUpdate start :::: %@", values);
+
       _eventSink(
           @{@"event" : @"bufferingUpdate", @"values" : values, @"key" : _key});
     }
@@ -453,6 +478,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   else if (context == statusContext) {
     AVPlayerItem *item = (AVPlayerItem *)object;
+    // NSLog(@"statusContext :::: %ld", item.status);
     switch (item.status) {
     case AVPlayerItemStatusFailed:
       if (_eventSink != nil) {
@@ -471,6 +497,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       break;
     }
   } else if (context == playbackLikelyToKeepUpContext) {
+    // NSLog(@"playbackLikelyToKeepUpContext :::::: ");
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
       [self updatePlayingState];
       if (_eventSink != nil) {
@@ -478,10 +505,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
       }
     }
   } else if (context == playbackBufferEmptyContext) {
+    // NSLog(@"playbackBufferEmptyContext :::::::: ");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingStart", @"key" : _key});
     }
   } else if (context == playbackBufferFullContext) {
+    // NSLog(@"playbackBufferFullContext :::::::: ");
     if (_eventSink != nil) {
       _eventSink(@{@"event" : @"bufferingEnd", @"key" : _key});
     }
@@ -575,11 +604,16 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)position {
-
+  NSLog(@"position method ::::: %f",
+        [BetterPlayerTimeUtils FLTCMTimeToMillis:([_player currentTime])]);
   return [BetterPlayerTimeUtils FLTCMTimeToMillis:([_player currentTime])];
 }
 
 - (int64_t)absolutePosition {
+  NSLog(@"absolutePosition method ::::: %f",
+        [BetterPlayerTimeUtils
+            FLTNSTimeIntervalToMillis:([[[_player currentItem] currentDate]
+                                          timeIntervalSince1970])]);
   return [BetterPlayerTimeUtils
       FLTNSTimeIntervalToMillis:([[[_player currentItem] currentDate]
                                     timeIntervalSince1970])];
