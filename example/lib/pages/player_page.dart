@@ -13,12 +13,17 @@ class _PlayerPageWidgetState extends State<PlayerPageWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text("Btter player testing"),
+      ),
       body: Column(
         children: [
-          TextField(
-            controller: textEditingController,
-            decoration: InputDecoration(hintText: "Enter m3u8 video link"),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: textEditingController,
+              decoration: InputDecoration(hintText: "Enter m3u8 video link"),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
