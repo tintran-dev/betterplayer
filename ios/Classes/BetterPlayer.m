@@ -295,7 +295,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // for video
 
   if (downloadFullVideoOnIos == 1) {
-    item.preferredForwardBufferDuration = 5;
+    item.preferredForwardBufferDuration = 3;
   }
   [_player replaceCurrentItemWithPlayerItem:item];
 
