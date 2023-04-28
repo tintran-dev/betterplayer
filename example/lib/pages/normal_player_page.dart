@@ -18,24 +18,15 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
         const BetterPlayerConfiguration(
-      autoPlay: false,
+      autoPlay: true,
       autoDetectFullscreenAspectRatio: true,
       looping: true,
       handleLifecycle: true,
       autoDispose: false,
       controlsConfiguration: BetterPlayerControlsConfiguration(
-        showControls: false,
-        enableFullscreen: false,
-        enableMute: false,
-        enableProgressText: false,
-        enableProgressBar: false,
-        enableProgressBarDrag: false,
-        enablePlayPause: false,
-        enableSkips: false,
-        enableAudioTracks: false,
-        enableRetry: false,
-        enableSubtitles: false,
-        showControlsOnInitialize: false,
+        showControls: true,
+        showControlsOnInitialize: true,
+        enableProgressBar: true,
       ),
     );
     final String extension = path.extension(widget.videoLink);
@@ -62,6 +53,12 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _betterPlayerController.dispose(forceDispose: true);
+    super.dispose();
   }
 
   @override
