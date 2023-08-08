@@ -92,6 +92,7 @@ internal class BetterPlayer(
     private val customDefaultLoadControl: CustomDefaultLoadControl =
         customDefaultLoadControl ?: CustomDefaultLoadControl()
     private var lastSendBufferedPosition = 0L
+    private var playerErrorStatus: Boolean = false
 
     init {
         val loadBuilder = DefaultLoadControl.Builder()
@@ -485,11 +486,17 @@ internal class BetterPlayer(
                     }
                     Player.STATE_IDLE -> {
                         //no-op
+                        if (playerErrorStatus) {
+                            val event: MutableMap<String, Any> = HashMap()
+                            event["event"] = "stalledCheck"
+                            eventSink.success(event)
+                        }
                     }
                 }
             }
 
             override fun onPlayerError(error: PlaybackException) {
+                playerErrorStatus = true
                 eventSink.error("VideoError", "Video player had error $error", "")
             }
         })

@@ -23,6 +23,7 @@ enum BetterPlayerEventType {
   setupDataSource,
   bufferingStart,
   bufferingUpdate,
+  stalledCheck,
   bufferingEnd,
   changedPlaylistItem,
 }

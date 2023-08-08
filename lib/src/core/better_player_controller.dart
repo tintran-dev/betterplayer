@@ -471,7 +471,8 @@ class BetterPlayerController {
               _betterPlayerDataSource?.notificationConfiguration?.activityName,
           clearKey: _betterPlayerDataSource?.drmConfiguration?.clearKey,
           videoExtension: _betterPlayerDataSource!.videoExtension,
-          useBufferForIos: _betterPlayerDataSource!.useBufferForIos,
+          preferredForwardBufferDurationIos:
+              _betterPlayerDataSource!.preferredForwardBufferDurationIos,
         );
 
         break;
@@ -1159,6 +1160,12 @@ class BetterPlayerController {
         break;
       case VideoEventType.bufferingUpdate:
         _postEvent(BetterPlayerEvent(BetterPlayerEventType.bufferingUpdate,
+            parameters: <String, dynamic>{
+              _bufferedParameter: event.buffered,
+            }));
+        break;
+      case VideoEventType.stalledCheck:
+        _postEvent(BetterPlayerEvent(BetterPlayerEventType.stalledCheck,
             parameters: <String, dynamic>{
               _bufferedParameter: event.buffered,
             }));

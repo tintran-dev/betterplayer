@@ -1,9 +1,11 @@
 import 'package:better_player/better_player.dart';
-import 'package:better_player_example/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:path/path.dart' as path;
 
 class NormalPlayerPage extends StatefulWidget {
+  final String videoLink;
+
+  const NormalPlayerPage({Key? key, required this.videoLink}) : super(key: key);
   @override
   _NormalPlayerPageState createState() => _NormalPlayerPageState();
 }
@@ -15,30 +17,48 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
   @override
   void initState() {
     BetterPlayerConfiguration betterPlayerConfiguration =
-        BetterPlayerConfiguration(
-      aspectRatio: 16 / 9,
-      fit: BoxFit.contain,
+        const BetterPlayerConfiguration(
       autoPlay: true,
+      autoDetectFullscreenAspectRatio: true,
       looping: true,
-      deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.portraitDown,
-        DeviceOrientation.portraitUp
-      ],
+      handleLifecycle: true,
+      autoDispose: false,
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        showControls: true,
+        showControlsOnInitialize: true,
+        enableProgressBar: true,
+      ),
     );
+    final String extension = path.extension(widget.videoLink);
     _betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      Constants.forBiggerBlazesUrl,
-      useBufferForIos: 1,
+      widget.videoLink,
+      videoExtension: extension == ".m3u8" ? "m3u8" : extension.substring(1),
+      videoFormat: extension == ".m3u8" ? BetterPlayerVideoFormat.hls : null,
+      liveStream: extension == ".m3u8" ? true : null,
       bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-        minBufferMs: 5000,
+        minBufferMs: 3000,
         bufferForPlaybackMs: 250,
         bufferForPlaybackAfterRebufferMs: 500,
-        maxBufferMs: 5000,
+        maxBufferMs: 3000,
       ),
+      cacheConfiguration: extension != ".m3u8"
+          ? null
+          : BetterPlayerCacheConfiguration(
+              useCache: true,
+              key: widget.videoLink,
+            ),
+      preferredForwardBufferDurationIos: 3,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _betterPlayerController.dispose(forceDispose: true);
+    super.dispose();
   }
 
   @override

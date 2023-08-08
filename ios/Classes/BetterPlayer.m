@@ -210,8 +210,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             withLicenseUrl:(NSString *)licenseUrl
                   cacheKey:(NSString *)cacheKey
               cacheManager:(CacheManager *)cacheManager
-        overriddenDuration:(int)overriddenDuration
-    downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
+        overriddenDuration:(int)overriddenDuration {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self setDataSourceURL:[NSURL fileURLWithPath:path]
                         withKey:key
@@ -223,7 +222,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                    cacheManager:cacheManager
              overriddenDuration:overriddenDuration
                  videoExtension:nil
-         downloadFullVideoOnIos:downloadFullVideoOnIos];
+            preferredForwardBufferDurationIos:nil];
 }
 
 - (void)setDataSourceURL:(NSURL *)url
@@ -236,7 +235,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
               cacheManager:(CacheManager *)cacheManager
         overriddenDuration:(int)overriddenDuration
             videoExtension:(NSString *)videoExtension
-    downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
+    preferredForwardBufferDurationIos:(int)preferredForwardBufferDurationIos {
   _overriddenDuration = 0;
   if (headers == [NSNull null] || headers == NULL) {
     headers = @{};
@@ -279,21 +278,21 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
   return [self setDataSourcePlayerItem:item
                                withKey:key
-                downloadFullVideoOnIos:downloadFullVideoOnIos];
+                preferredForwardBufferDurationIos:preferredForwardBufferDurationIos];
 }
 
 - (void)setDataSourcePlayerItem:(AVPlayerItem *)item
                         withKey:(NSString *)key
-         downloadFullVideoOnIos:(int)downloadFullVideoOnIos {
+         preferredForwardBufferDurationIos:(int)preferredForwardBufferDurationIos {
   _key = key;
   _stalledCount = 0;
   _isStalledCheckStarted = false;
   _playerRate = 1;
-  // downloadFullVideoOnIos if set to 1 will only download the buffer duration
+  // preferredForwardBufferDurationIos if set to 1 will only download the buffer duration
   // for video
 
-  if (downloadFullVideoOnIos == 1) {
-    item.preferredForwardBufferDuration = 1;
+  if (preferredForwardBufferDurationIos > 0) {
+    item.preferredForwardBufferDuration = preferredForwardBufferDurationIos;
   }
   [_player replaceCurrentItemWithPlayerItem:item];
 
@@ -349,6 +348,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
               CMTimeGetSeconds(_player.currentItem.currentTime) >
           10.0) {
     [self play];
+    // event added for when video plays again after stalled condition
+    if (_eventSink != nil) {
+       _eventSink(@{@"event" : @"stalledCheck"});
+    }
   } else {
 
     _stalledCount++;
@@ -369,6 +372,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (NSTimeInterval)availableDuration {
   NSArray *loadedTimeRanges = [[_player currentItem] loadedTimeRanges];
+
   if (loadedTimeRanges.count > 0) {
     CMTimeRange timeRange =
         [[loadedTimeRanges objectAtIndex:0] CMTimeRangeValue];
@@ -444,6 +448,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
         [values addObject:@[ @(start), @(end) ]];
       }
+
       _eventSink(
           @{@"event" : @"bufferingUpdate", @"values" : values, @"key" : _key});
     }
@@ -575,7 +580,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 }
 
 - (int64_t)position {
-
   return [BetterPlayerTimeUtils FLTCMTimeToMillis:([_player currentTime])];
 }
 

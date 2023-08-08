@@ -74,6 +74,6 @@ class MockVideoPlayerController extends VideoPlayerController {
     String? activityName,
     String? clearKey,
     String? videoExtension,
-    int? useBufferForIos,
+    int? preferredForwardBufferDurationIos,
   }) async {}
 }
