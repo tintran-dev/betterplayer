@@ -210,7 +210,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
             withLicenseUrl:(NSString *)licenseUrl
                   cacheKey:(NSString *)cacheKey
               cacheManager:(CacheManager *)cacheManager
-        overriddenDuration:(int)overriddenDuration{
+        overriddenDuration:(int)overriddenDuration {
   NSString *path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
   return [self setDataSourceURL:[NSURL fileURLWithPath:path]
                         withKey:key
@@ -221,7 +221,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
                        cacheKey:cacheKey
                    cacheManager:cacheManager
              overriddenDuration:overriddenDuration
-                 videoExtension:nil];
+                 videoExtension:nil
+            preferredForwardBufferDurationIos:nil];
 }
 
 - (void)setDataSourceURL:(NSURL *)url

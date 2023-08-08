@@ -48,7 +48,7 @@ class _NormalPlayerPageState extends State<NormalPlayerPage> {
               useCache: true,
               key: widget.videoLink,
             ),
-      useBufferForIos: 1,
+      preferredForwardBufferDurationIos: 3,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(_betterPlayerDataSource);
