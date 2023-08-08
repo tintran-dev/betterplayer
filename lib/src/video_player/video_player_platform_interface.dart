@@ -227,6 +227,7 @@ class DataSource {
     this.activityName,
     this.clearKey,
     this.videoExtension,
+    this.preferredForwardBufferDurationIos = 0,
   }) : assert(uri == null || asset == null);
 
   /// Describes the type of data source this [VideoPlayerController]
@@ -237,6 +238,11 @@ class DataSource {
   /// This has nothing to do with the video's file type. It's just the place
   /// from which the video is fetched from.
   final DataSourceType sourceType;
+
+  /// the download of video IOS is dependednt on this value ,
+  /// if set to 0 IOS will device itself how much to buffer
+  /// if set to 1 will take the buffering configurations well
+  int? preferredForwardBufferDurationIos;
 
   /// The URI to the video file.
   ///
@@ -464,6 +470,11 @@ enum VideoEventType {
 
   /// An unknown event has been received.
   unknown,
+
+  /// Event received when video plays again after stall condition
+  /// Stall condition happens for HLS videos when there is no buffer left.
+  /// when the next biffer arrives and video is played this event is got.
+  stalledCheck,
 }
 
 /// Describes a discrete segment of time within a video using a [start] and

@@ -254,6 +254,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           break;
         case VideoEventType.unknown:
           break;
+        case VideoEventType.stalledCheck:
+          break;
       }
     }
 
@@ -335,6 +337,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     String? activityName,
     String? clearKey,
     String? videoExtension,
+    int? preferredForwardBufferDurationIos,
   }) {
     return _setDataSource(
       DataSource(
@@ -358,6 +361,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
         activityName: activityName,
         clearKey: clearKey,
         videoExtension: videoExtension,
+        preferredForwardBufferDurationIos: preferredForwardBufferDurationIos,
       ),
     );
   }

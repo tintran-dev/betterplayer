@@ -70,7 +70,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           'imageUrl': dataSource.imageUrl,
           'notificationChannelName': dataSource.notificationChannelName,
           'overriddenDuration': dataSource.overriddenDuration?.inMilliseconds,
-          'activityName': dataSource.activityName
+          'activityName': dataSource.activityName,
+          'preferredForwardBufferDurationIos':
+              dataSource.preferredForwardBufferDurationIos,
         };
         break;
       case DataSourceType.network:
@@ -95,6 +97,8 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           'activityName': dataSource.activityName,
           'clearKey': dataSource.clearKey,
           'videoExtension': dataSource.videoExtension,
+          'preferredForwardBufferDurationIos':
+              dataSource.preferredForwardBufferDurationIos,
         };
         break;
       case DataSourceType.file:
@@ -111,7 +115,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           'notificationChannelName': dataSource.notificationChannelName,
           'overriddenDuration': dataSource.overriddenDuration?.inMilliseconds,
           'activityName': dataSource.activityName,
-          'clearKey': dataSource.clearKey
+          'clearKey': dataSource.clearKey,
+          'preferredForwardBufferDurationIos':
+              dataSource.preferredForwardBufferDurationIos,
         };
         break;
     }
@@ -148,6 +154,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   Future<void> pause(int? textureId) {
     return _channel.invokeMethod<void>(
       'pause',
+      <String, dynamic>{'textureId': textureId},
+    );
+  }
+
+  Future<void> stalledCheckCalled(int? textureId) {
+    return _channel.invokeMethod<void>(
+      'stalledCheck',
       <String, dynamic>{'textureId': textureId},
     );
   }
@@ -361,7 +374,6 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
           );
         case 'bufferingUpdate':
           final List<dynamic> values = map['values'] as List;
-
           return VideoEvent(
             eventType: VideoEventType.bufferingUpdate,
             key: key,
@@ -402,7 +414,11 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             eventType: VideoEventType.pipStart,
             key: key,
           );
-
+        case 'stalledCheck':
+          return VideoEvent(
+            eventType: VideoEventType.stalledCheck,
+            key: key,
+          );
         case 'pipStop':
           return VideoEvent(
             eventType: VideoEventType.pipStop,

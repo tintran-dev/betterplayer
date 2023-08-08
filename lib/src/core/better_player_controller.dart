@@ -471,6 +471,8 @@ class BetterPlayerController {
               _betterPlayerDataSource?.notificationConfiguration?.activityName,
           clearKey: _betterPlayerDataSource?.drmConfiguration?.clearKey,
           videoExtension: _betterPlayerDataSource!.videoExtension,
+          preferredForwardBufferDurationIos:
+              _betterPlayerDataSource!.preferredForwardBufferDurationIos,
         );
 
         break;
@@ -1162,6 +1164,12 @@ class BetterPlayerController {
               _bufferedParameter: event.buffered,
             }));
         break;
+      case VideoEventType.stalledCheck:
+        _postEvent(BetterPlayerEvent(BetterPlayerEventType.stalledCheck,
+            parameters: <String, dynamic>{
+              _bufferedParameter: event.buffered,
+            }));
+        break;
       case VideoEventType.bufferingEnd:
         _postEvent(BetterPlayerEvent(BetterPlayerEventType.bufferingEnd));
         break;
@@ -1240,6 +1248,7 @@ class BetterPlayerController {
   ///currently not supported on iOS. On iOS, the video format must be in this
   ///list: https://github.com/sendyhalim/Swime/blob/master/Sources/MimeType.swift
   Future<void> preCache(BetterPlayerDataSource betterPlayerDataSource) async {
+    print("====> prechache better player");
     final cacheConfig = betterPlayerDataSource.cacheConfiguration ??
         const BetterPlayerCacheConfiguration(useCache: true);
 

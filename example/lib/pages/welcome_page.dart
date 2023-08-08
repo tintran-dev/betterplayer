@@ -22,6 +22,7 @@ import 'package:better_player_example/pages/notification_player_page.dart';
 import 'package:better_player_example/pages/overridden_aspect_ratio_page.dart';
 import 'package:better_player_example/pages/overriden_duration_page.dart';
 import 'package:better_player_example/pages/placeholder_until_play_page.dart';
+import 'package:better_player_example/pages/player_page.dart';
 import 'package:better_player_example/pages/playlist_page.dart';
 import 'package:better_player_example/pages/resolutions_page.dart';
 import 'package:better_player_example/pages/reusable_video_list/reusable_video_list_page.dart';
@@ -82,7 +83,7 @@ class _WelcomePageState extends State<WelcomePage> {
         _navigateToPage(BasicPlayerPage());
       }),
       _buildExampleElementWidget("Normal player", () {
-        _navigateToPage(NormalPlayerPage());
+        _navigateToPage(PlayerPageWidget());
       }),
       _buildExampleElementWidget("Controls configuration", () {
         _navigateToPage(ControlsConfigurationPage());
