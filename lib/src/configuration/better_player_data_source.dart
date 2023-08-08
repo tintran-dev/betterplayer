@@ -42,7 +42,7 @@ class BetterPlayerDataSource {
   /// the download of video IOS is dependednt on this value ,
   /// if set to 0 IOS will device itself how much to buffer
   /// if set to 1 will take the buffering configurations well
-  int? useBufferForIos = 0;
+  int? preferredForwardBufferDurationIos = 0;
 
   ///Optional, alternative resolutions for non-hls/dash video. Used to setup
   ///different qualities for video.
@@ -104,7 +104,7 @@ class BetterPlayerDataSource {
     this.drmConfiguration,
     this.placeholder,
     this.bufferingConfiguration = const BetterPlayerBufferingConfiguration(),
-    this.useBufferForIos,
+    this.preferredForwardBufferDurationIos,
   }) : assert(
             (type == BetterPlayerDataSourceType.network ||
                     type == BetterPlayerDataSourceType.file) ||
@@ -132,7 +132,7 @@ class BetterPlayerDataSource {
     Widget? placeholder,
     BetterPlayerBufferingConfiguration bufferingConfiguration =
         const BetterPlayerBufferingConfiguration(),
-    int? useBufferForIos,
+    int? preferredForwardBufferDurationIos,
   }) {
     return BetterPlayerDataSource(BetterPlayerDataSourceType.network, url,
         subtitles: subtitles,
@@ -149,7 +149,7 @@ class BetterPlayerDataSource {
         drmConfiguration: drmConfiguration,
         placeholder: placeholder,
         bufferingConfiguration: bufferingConfiguration,
-        useBufferForIos: useBufferForIos);
+        preferredForwardBufferDurationIos: preferredForwardBufferDurationIos);
   }
 
   ///Factory method to build file data source which uses url as data source.
@@ -232,7 +232,7 @@ class BetterPlayerDataSource {
     Widget? placeholder,
     BetterPlayerBufferingConfiguration? bufferingConfiguration =
         const BetterPlayerBufferingConfiguration(),
-    int? useBufferForIos,
+    int? preferredForwardBufferDurationIos,
   }) {
     return BetterPlayerDataSource(type ?? this.type, url ?? this.url,
         bytes: bytes ?? this.bytes,
@@ -253,6 +253,7 @@ class BetterPlayerDataSource {
         placeholder: placeholder ?? this.placeholder,
         bufferingConfiguration:
             bufferingConfiguration ?? this.bufferingConfiguration,
-        useBufferForIos: useBufferForIos ?? this.useBufferForIos);
+        preferredForwardBufferDurationIos: preferredForwardBufferDurationIos ??
+            this.preferredForwardBufferDurationIos);
   }
 }
