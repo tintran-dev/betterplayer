@@ -45,7 +45,10 @@ class _AutoFullscreenOrientationPageState
           ),
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: BetterPlayer(controller: _betterPlayerController),
+            child: BetterPlayer(controller: _betterPlayerController,onFullScreenClosed: ()async{
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fullscreen closed')));
+              return true;
+            }),
           ),
           ElevatedButton(
             child: Text("Play horizontal video"),
