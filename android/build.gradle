@@ -33,6 +33,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 33
+    namespace "com.jhomlala.better_player"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
